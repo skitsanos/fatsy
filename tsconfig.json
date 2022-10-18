@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "target": "esnext",
+        "module": "esnext",
+        "sourceMap": true,
+        "strict": true,
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "src/*.ts",
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}
