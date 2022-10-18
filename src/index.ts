@@ -1,26 +1,30 @@
 import Fastify, {FastifyError, FastifyInstance, FastifyReply} from 'fastify';
 import {join as pathJoin} from 'path';
 import loader from './loader';
+import fileUpload from 'fastify-file-upload';
 
 const fastify: FastifyInstance = Fastify({
     logger: true
 });
 
-fastify.setErrorHandler((error: FastifyError, _, response:FastifyReply) =>
+fastify.register(fileUpload);
+
+fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
 {
     const {message, statusCode} = error;
 
-    response.send({
+    response.code(statusCode as number).send({
         error: {
             message
         },
         ...process.env.NODE_ENV !== 'production' && {
             debug: {
-               statusCode
+                statusCode
             }
         }
     });
 });
+
 
 loader(pathJoin(__dirname, 'routes'), fastify);
 

@@ -20,7 +20,7 @@ interface IRoute
     default: IRouteHandler;
 }
 
-const parsePath = async (p: string, fastify: FastifyInstance) =>
+const parsePath = async (root:string, p: string, fastify: FastifyInstance) =>
 {
     if (existsSync(p))
     {
@@ -32,13 +32,13 @@ const parsePath = async (p: string, fastify: FastifyInstance) =>
                 const fullPath = pathJoin(p, item);
                 if (statSync(fullPath).isDirectory())
                 {
-                    parsePath(fullPath, fastify);
+                    parsePath(root, fullPath, fastify);
                 }
 
                 if (statSync(fullPath).isFile())
                 {
                     const posixPath = fullPath.split(pathSeparator).join(posix.sep);
-                    const urlPath = posixPath.substring(fullPath.indexOf(__dirname) + __dirname.length, fullPath.indexOf(basename(fullPath)) - 1).replace('/routes', '');
+                    const urlPath = posixPath.substring(fullPath.indexOf(__dirname) + __dirname.length, fullPath.indexOf(basename(fullPath)) - 1).replace(`/${root}`, '');
 
                     const pathParsed = urlPath === '' ? '/' : urlPath.replace(/\$/gi, ':');
                     const method = basename(fullPath).replace(/\.[^/.]+$/, '');
@@ -62,7 +62,9 @@ const parsePath = async (p: string, fastify: FastifyInstance) =>
 
 const loader = async (path: string, fastify: FastifyInstance) =>
 {
-    await parsePath(path, fastify);
+    const posixPath = path.split(pathSeparator).join(posix.sep);
+    const routesRoot = posixPath.split('/').pop() as string;
+    await parsePath(routesRoot, path, fastify);
 };
 
 export default loader;
