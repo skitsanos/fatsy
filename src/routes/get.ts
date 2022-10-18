@@ -1,11 +1,14 @@
-import {FastifyReply, FastifyRequest} from 'fastify';
+import {FastifyReply} from 'fastify';
 import {ILoadableHandler} from '@/loader';
+import {IRequest} from '@/utils/de.request';
 
 const get: ILoadableHandler = {
 
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+    handler: (request: IRequest, response: FastifyReply) =>
     {
-        response.send({debug: process.env.NODE_ENV !== 'production'});
+        const {config} = request;
+
+        response.send({debug: process.env.NODE_ENV !== 'production', config});
     }
 };
 
