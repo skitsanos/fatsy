@@ -1,0 +1,41 @@
+# Fatsy
+
+Fastify Server Template done in TypeScript. 
+
+Fatsy is using the same route definition standard as
+in [Foxx Builder](https://github.com/skitsanos/foxx-builder), [Umi](https://umijs.org/), [Ice](https://ice.work/) and
+many others:
+
+```
+/routes
+-- get.js
+-- /echo
+---- get.js
+-- /users
+---- /$id
+------- get.js
+---- get.js
+---- post.js
+```
+
+### Config is in YAML format
+
+No more confusing JSON, - simple and readable YAML config
+
+```yaml
+app:
+  title: My demo API server
+
+server:
+  host: "0.0.0.0"
+  port: 3000
+  logger:
+    level: trace
+```
+
+### Environments that were tested
+
+- [x] Runs in standalone mode
+- [x] Runs in Docker
+- [x] Runs in Amazon ECS
+- [x] Runs in amazon ECS via HashiCorp waypoint
