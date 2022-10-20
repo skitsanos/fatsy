@@ -13,7 +13,7 @@ const post: ILoadableHandler = {
         }
     },
 
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+    handler: (_request: FastifyRequest, response: FastifyReply) =>
     {
         response.send({result: true});
     }

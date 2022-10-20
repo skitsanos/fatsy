@@ -8,7 +8,7 @@ const get: ILoadableHandler = {
     {
         const {config} = request;
 
-        response.send({debug: process.env.NODE_ENV !== 'production', config});
+        response.send({debug: process.env['NODE_ENV'] !== 'production', config});
     }
 };
 

@@ -17,7 +17,7 @@ const fastify: FastifyInstance = Fastify({
 });
 
 fastify.decorateRequest('config', null);
-fastify.addHook('preHandler', (req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
+fastify.addHook('preHandler', (req: IRequest, _res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
     req.config = config;
     done();
@@ -25,7 +25,7 @@ fastify.addHook('preHandler', (req: IRequest, res: FastifyReply, done: HookHandl
 
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', (req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
+fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
     res.header('server', config.app?.title);
     /*
@@ -55,7 +55,7 @@ fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
         error: {
             message
         },
-        ...process.env.NODE_ENV !== 'production' && {
+        ...process.env['NODE_ENV'] !== 'production' && {
             debug: {
                 statusCode
             }
