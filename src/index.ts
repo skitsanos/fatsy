@@ -6,11 +6,14 @@
 import Fastify, {FastifyError, FastifyInstance, FastifyReply, HookHandlerDoneFunction} from 'fastify';
 import {join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
-import loadConfig from '@/utils/loadConfig';
 import loader from '@/loader';
 import {IRequest} from '@/utils/de.request';
+import ApplicationConfiguration from '@skitsanos/app-config';
 
-const config = loadConfig(pathJoin(__dirname, '..', 'config', 'default.yaml'));
+const appConfig = new ApplicationConfiguration();
+appConfig.load(pathJoin(__dirname, '..', 'config'));
+
+const {config}: Record<string, any> = appConfig;
 
 const fastify: FastifyInstance = Fastify({
     logger: config.server.logger
@@ -62,7 +65,6 @@ fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
         }
     });
 });
-
 
 loader(pathJoin(__dirname, 'routes'), fastify);
 
