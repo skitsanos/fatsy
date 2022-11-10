@@ -7,8 +7,8 @@ import Fastify, {FastifyError, FastifyInstance, FastifyReply, HookHandlerDoneFun
 import {join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
 import fastifyJwt from '@fastify/jwt';
-import loader from '@/loader';
-import {IRequest} from '@/utils/de.request';
+import loader from '@/utils/loader';
+import {IRequest} from '@/utils/def.request';
 import ApplicationConfiguration from '@skitsanos/app-config';
 
 const appConfig = new ApplicationConfiguration();
@@ -32,6 +32,10 @@ fastify.register(fileUpload);
 //https://github.com/fastify/fastify-jwt
 //
 fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
+
+//
+//configuring views engine
+//
 
 fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {

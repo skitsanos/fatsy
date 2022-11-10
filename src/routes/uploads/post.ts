@@ -1,5 +1,6 @@
-import {FastifyReply, FastifyRequest} from 'fastify';
+import {FastifyReply} from 'fastify';
 import {ILoadableHandler} from '@/loader';
+import {IRequest} from '@/utils/def.request';
 
 const post: ILoadableHandler = {
     schema: {
@@ -12,7 +13,7 @@ const post: ILoadableHandler = {
         }
     },
 
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+    handler: (request: IRequest, response: FastifyReply) =>
     {
         // More details on:
         //https://github.com/huangang/fastify-file-upload#readme

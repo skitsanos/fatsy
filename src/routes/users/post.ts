@@ -1,5 +1,6 @@
-import {FastifyReply, FastifyRequest} from 'fastify';
+import {FastifyReply} from 'fastify';
 import {ILoadableHandler} from '@/loader';
+import {IRequest} from '@/utils/def.request';
 
 const post: ILoadableHandler = {
     schema: {
@@ -13,7 +14,7 @@ const post: ILoadableHandler = {
         }
     },
 
-    handler: (_request: FastifyRequest, response: FastifyReply) =>
+    handler: (_request: IRequest, response: FastifyReply) =>
     {
         response.send({result: true});
     }
