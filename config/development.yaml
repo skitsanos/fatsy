@@ -2,3 +2,5 @@ server:
   port: 8000
   headers:
     X-Designed-By: skitsanos
+  logger:
+    level: info
