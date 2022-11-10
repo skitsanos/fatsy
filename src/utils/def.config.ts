@@ -1,13 +1,19 @@
+export interface IConfApp
+{
+    title: string;
+}
+
+export interface IConfAuth
+{
+    secret: string;
+}
+
 export interface IConfServer
 {
     host: string;
     port: number;
     logger?: boolean | object;
-}
-
-export interface IConfApp
-{
-    title: string;
+    auth: IConfAuth;
 }
 
 export interface IDefConfig

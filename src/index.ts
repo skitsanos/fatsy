@@ -1,11 +1,12 @@
 /**
  * Fatsy - Fastify Server Template done in TypeScript
- * @version 1.0.20221018
+ * @version 1.0.20221110
  * @author skitsanos, https://github.com/skitsanos
  */
 import Fastify, {FastifyError, FastifyInstance, FastifyReply, HookHandlerDoneFunction} from 'fastify';
 import {join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
+import fastifyJwt from '@fastify/jwt';
 import loader from '@/loader';
 import {IRequest} from '@/utils/de.request';
 import ApplicationConfiguration from '@skitsanos/app-config';
@@ -27,6 +28,10 @@ fastify.addHook('preHandler', (req: IRequest, _res: FastifyReply, done: HookHand
 });
 
 fastify.register(fileUpload);
+//
+//https://github.com/fastify/fastify-jwt
+//
+fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
 
 fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
@@ -66,18 +71,20 @@ fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
     });
 });
 
-loader(pathJoin(__dirname, 'routes'), fastify);
 
-fastify.listen({
-    port: config.server.port,
-    host: config.server.host
-}).then(() =>
-{
-    fastify.log.info('Up and running');
-}).catch(err =>
-{
-    if (err)
+loader(pathJoin(__dirname, 'routes'), fastify).then(()=>{
+    fastify.listen({
+        port: config.server.port,
+        host: config.server.host
+    }).then(() =>
     {
-        fastify.log.error(err);
-    }
+        fastify.log.info('Up and running');
+    }).catch(err =>
+    {
+        if (err)
+        {
+            fastify.log.error(err);
+        }
+    });
 });
+

@@ -10,6 +10,8 @@ server:
   https:
     key: "server.key"
     cert: "server.pem"
+  auth:
+    secret: SuperSecret
 
 temmplating:
   engine: handlebars
