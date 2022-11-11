@@ -1,14 +1,14 @@
-import {FastifyReply} from 'fastify';
-import {ILoadableHandler} from '@/loader';
+import {ILoadableHandler} from '@/utils/loader';
 import {IRequest} from '@/utils/def.request';
+import {FastifyReply} from 'fastify';
 
 const get: ILoadableHandler = {
 
-    handler: (request: IRequest, response: FastifyReply) =>
+    handler: (_request: IRequest, response: FastifyReply) =>
     {
-        const {config} = request;
-
-        response.send({debug: process.env['NODE_ENV'] !== 'production', config});
+        //response.send({debug: process.env['NODE_ENV'] !== 'production', config});
+        //response.code(200);
+        response.view('layout', {user: 'John'});
     }
 };
 

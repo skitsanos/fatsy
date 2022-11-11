@@ -13,6 +13,10 @@ server:
   auth:
     secret: SuperSecret
 
-temmplating:
+templating:
   engine: handlebars
-  base: "templates"
+  root: "./templates"
+  options:
+    partials:
+      index: "index.html"
+      footer: "footer.html"

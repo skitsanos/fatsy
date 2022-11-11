@@ -1,5 +1,5 @@
-import {fastify, FastifyReply, FastifyRequest, RouteHandlerMethod} from 'fastify';
-import {ILoadableHandler} from '@/loader';
+import {FastifyReply, FastifyRequest} from 'fastify';
+import {ILoadableHandler} from '@/utils/loader';
 
 const post: ILoadableHandler = {
     schema: {
@@ -13,11 +13,11 @@ const post: ILoadableHandler = {
         }
     },
 
-    handler: (request: FastifyRequest, response: FastifyReply):RouteHandlerMethod =>
+    handler: (request: FastifyRequest, response: FastifyReply) =>
     {
         const {username, password} = request.body;
         //const token = fastify.jwt.sign({username});
-        console.log(Object.keys(this))
+        console.log(Object.keys(this));
 
         response.send({result: {}});
     }

@@ -20,7 +20,7 @@ interface IRoute
     default: IRouteHandler;
 }
 
-const parsePath = async (root:string, p: string, fastify: FastifyInstance) =>
+const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
 {
     if (existsSync(p))
     {
@@ -38,14 +38,19 @@ const parsePath = async (root:string, p: string, fastify: FastifyInstance) =>
                 if (statSync(fullPath).isFile())
                 {
                     const posixPath = fullPath.split(pathSeparator).join(posix.sep);
-                    const urlPath = posixPath.substring(fullPath.indexOf(__dirname) + __dirname.length, fullPath.indexOf(basename(fullPath)) - 1).replace(`/${root}`, '');
+                    const urlPath = posixPath.substring(posixPath.indexOf('routes') + 6)
+                        .replace(`/${root}`, '')
+                        .replace(/\/\w+\.(.+)$/gi, '');
 
-                    const pathParsed = urlPath === '' ? '/' : urlPath.replace(/\$/gi, ':');
+                    const pathParsed = urlPath === ''
+                        ? '/'
+                        : urlPath.replace(/\$/gi, ':');
+
                     const method = basename(fullPath).replace(/\.[^/.]+$/, '');
 
                     fastify.log.info(`Mounting ${method.toUpperCase()} ${pathParsed}`);
 
-                    const routeModule: IRoute = await import(fullPath);
+                    const routeModule: IRoute = await import(posixPath);
 
                     fastify.route({
                         method: method.toUpperCase() as HTTPMethods,
@@ -58,7 +63,6 @@ const parsePath = async (root:string, p: string, fastify: FastifyInstance) =>
         }
     }
 };
-
 
 const loader = async (path: string, fastify: FastifyInstance) =>
 {

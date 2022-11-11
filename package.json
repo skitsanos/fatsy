@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "dev": "node -r @swc-node/register src/index.ts"
+        "dev": "node --watch -r @swc-node/register src/index.ts"
     },
     "dependencies": {
         "@fastify/autoload": "^5.4.1",

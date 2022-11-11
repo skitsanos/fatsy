@@ -4,9 +4,10 @@
  * @author skitsanos, https://github.com/skitsanos
  */
 import Fastify, {FastifyError, FastifyInstance, FastifyReply, HookHandlerDoneFunction} from 'fastify';
-import {join as pathJoin} from 'path';
+import {join as pathJoin, isAbsolute} from 'path';
 import fileUpload from 'fastify-file-upload';
 import fastifyJwt from '@fastify/jwt';
+import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
 import {IRequest} from '@/utils/def.request';
 import ApplicationConfiguration from '@skitsanos/app-config';
@@ -61,9 +62,9 @@ fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandl
 
 fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
 {
-    const {message, statusCode} = error;
+    const {message, statusCode = 400} = error;
 
-    response.code(statusCode as number).send({
+    response.code(statusCode).send({
         error: {
             message
         },
@@ -75,8 +76,47 @@ fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
     });
 });
 
+loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
+{
+    fastify.log.info('Checking for template engine');
 
-loader(pathJoin(__dirname, 'routes'), fastify).then(()=>{
+    if (config.templating)
+    {
+        fastify.log.info(`Found ${config.templating.engine} templating engine`);
+
+        try
+        {
+            const engine = await import(config.templating.engine);
+
+            const {root, layout, ext = 'html', options} = config.templating;
+
+            const getRootPath = () =>
+            {
+                if (isAbsolute(root))
+                {
+                    return root;
+                }
+
+                return pathJoin(__dirname, root);
+            };
+
+            fastify.register(fastifyView, {
+                engine: {
+                    [config.templating.engine]: engine
+                },
+                viewExt: ext,
+                root: getRootPath(),
+                layout,
+                options
+            });
+
+        }
+        catch (e: any)
+        {
+            fastify.log.error(e.message);
+        }
+    }
+
     fastify.listen({
         port: config.server.port,
         host: config.server.host
