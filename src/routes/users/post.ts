@@ -1,5 +1,5 @@
 import {FastifyReply} from 'fastify';
-import {ILoadableHandler} from '@/loader';
+import {ILoadableHandler} from '@/utils/loader';
 import {IRequest} from '@/utils/def.request';
 
 const post: ILoadableHandler = {
