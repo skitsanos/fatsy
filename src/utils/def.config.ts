@@ -18,6 +18,5 @@ export interface IConfServer
 
 export interface IDefConfig
 {
-    app?: IConfApp;
-    server: IConfServer;
+    [key: string]: any;
 }

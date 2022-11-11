@@ -1,8 +1,8 @@
 import {FastifyReply} from 'fastify';
-import {ILoadableHandler} from '@/utils/loader';
+import {IDynamicRoute} from '@/utils/loader';
 import {IRequest} from '@/utils/def.request';
 
-const post: ILoadableHandler = {
+const post: IDynamicRoute = {
     schema: {
         body: {
             type: 'object',

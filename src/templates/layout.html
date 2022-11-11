@@ -3,10 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"/>
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@300&display=swap"
+          rel="stylesheet">
+
+    <style type="text/css">
+        body
+        {
+            font-family: Karla, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #content
+        {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-<div>Welcome, {{user}}</div>
-{{> index}}
+<header class="bg-black-90 fixed w-100 ph3 pv3 pv4-ns ph4-m ph5-l">
+    <nav class="f6 fw6 ttu tracked">
+        <a class="link dim white dib mr3"
+           href="#"
+           title="Home">Home</a>
+        <a class="link dim white dib mr3"
+           href="#"
+           title="About">About</a>
+        <a class="link dim white dib mr3"
+           href="#"
+           title="Store">Store</a>
+        <a class="link dim white dib"
+           href="https://tachyons.io/components/"
+           title="Components">Components</a>
+    </nav>
+</header>
+
+<section id="content"
+         class="ph3 ph4-ns pv6">
+
+    <h2>Welcome, {{user}}</h2>
+    {{> index}}
+</section>
+
 
 {{> footer}}
 </body>

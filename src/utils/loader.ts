@@ -1,17 +1,21 @@
 import {existsSync, readdirSync, statSync} from 'fs';
 import {basename, join as pathJoin, sep as pathSeparator, posix} from 'path';
-import {FastifyInstance, FastifySchema, HTTPMethods, RouteHandlerMethod} from 'fastify';
+import {DoneFuncWithErrOrRes, FastifyInstance, FastifySchema, HTTPMethods, RouteHandlerMethod} from 'fastify';
+import {IRequest} from '@/utils/def.request';
+import {IResponse} from '@/utils/def.response';
 
-export interface ILoadableHandler
+export interface IDynamicRoute
 {
     schema?: FastifySchema,
     handler: RouteHandlerMethod,
+    onRequest?: (request: IRequest, response: IResponse, done: DoneFuncWithErrOrRes) => void,
 }
 
 interface IRouteHandler
 {
     handler: RouteHandlerMethod,
     schema?: FastifySchema,
+    onRequest?: (request: IRequest, response: IResponse, done: DoneFuncWithErrOrRes) => void,
     url: string
 }
 
@@ -56,6 +60,7 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
                         method: method.toUpperCase() as HTTPMethods,
                         handler: routeModule.default.handler,
                         schema: routeModule.default.schema,
+                        onRequest: routeModule.default.onRequest,
                         url: pathParsed
                     });
                 }

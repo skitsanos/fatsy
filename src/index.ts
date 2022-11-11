@@ -11,6 +11,8 @@ import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
 import {IRequest} from '@/utils/def.request';
 import ApplicationConfiguration from '@skitsanos/app-config';
+import {IResponse} from '@/utils/def.response';
+//import pluginAuthenticate from '@/plugins/auth';
 
 const appConfig = new ApplicationConfiguration();
 appConfig.load(pathJoin(__dirname, '..', 'config'));
@@ -21,22 +23,25 @@ const fastify: FastifyInstance = Fastify({
     logger: config.server.logger
 });
 
-fastify.decorateRequest('config', null);
-fastify.addHook('preHandler', (req: IRequest, _res: FastifyReply, done: HookHandlerDoneFunction) =>
-{
-    req.config = config;
-    done();
-});
-
-fastify.register(fileUpload);
 //
 //https://github.com/fastify/fastify-jwt
 //
 fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
+//fastify.register(pluginAuthenticate, {secret: config.server.auth.secret || 'superSecret'});
 
-//
-//configuring views engine
-//
+fastify.decorateRequest('config', null);
+fastify.decorateRequest('log', fastify.log);
+fastify.decorateReply('jwt', fastify?.jwt);
+
+fastify.addHook('preHandler', (req: IRequest, res: IResponse, done: HookHandlerDoneFunction) =>
+{
+    req.config = config;
+    res['jwt'] = fastify.jwt;
+
+    done();
+});
+
+fastify.register(fileUpload);
 
 fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
@@ -57,6 +62,7 @@ fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandl
 	 * if it’s not allowed
 	 */
     res.header('X-Frame-Options', 'DENY');
+
     done();
 });
 
@@ -78,6 +84,9 @@ fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
 
 loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
 {
+    //
+    // configuring views engine
+    //
     fastify.log.info('Checking for template engine');
 
     if (config.templating)
