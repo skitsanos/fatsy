@@ -1,9 +1,8 @@
-import {FastifyReply} from 'fastify';
-import {IRequest} from '@/utils/def.request';
-import {IResponse} from '@/utils/def.response';
+import {FastifyReply, FastifyRequest} from 'fastify';
+import {IDynamicRoute} from '@/utils/loader';
 
-const get = {
-    onRequest: async (request: IRequest, response: IResponse) =>
+const get: IDynamicRoute = {
+    onRequest: async (request: FastifyRequest, response: FastifyReply) =>
     {
         try
         {
@@ -14,9 +13,15 @@ const get = {
             response.send(err);
         }
     },
-    handler: (_request: IRequest, response: FastifyReply) =>
+    handler: (request: FastifyRequest, response: FastifyReply) =>
     {
-        response.send({result: 'get users'});
+        const {username} = request.user as Record<string, any>;
+
+        request.log.info(`User: ${username}`);
+
+        response.send({
+            result: 'get users'
+        });
     }
 };
 

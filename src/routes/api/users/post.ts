@@ -1,6 +1,4 @@
-import {FastifyReply} from 'fastify';
 import {IDynamicRoute} from '@/utils/loader';
-import {IRequest} from '@/utils/def.request';
 
 const post: IDynamicRoute = {
     schema: {
@@ -13,10 +11,11 @@ const post: IDynamicRoute = {
             required: ['username', 'password']
         }
     },
-
-    handler: (_request: IRequest, response: FastifyReply) =>
+    handler: (request, response) =>
     {
-        response.send({result: true});
+        const {username, password} = request.body;
+
+        response.send({username});
     }
 };
 

@@ -1,6 +1,5 @@
 import {IDynamicRoute} from '@/utils/loader';
-import {IResponse} from '@/utils/def.response';
-import {IRequest} from '@/utils/def.request';
+import {FastifyReply, FastifyRequest} from 'fastify';
 
 const post: IDynamicRoute = {
     schema: {
@@ -14,7 +13,7 @@ const post: IDynamicRoute = {
         }
     },
 
-    handler: (request: IRequest, response: IResponse) =>
+    handler: (request: FastifyRequest, response: FastifyReply) =>
     {
         const {username, password} = request.body as Record<string, string>;
 

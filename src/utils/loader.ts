@@ -1,22 +1,17 @@
 import {existsSync, readdirSync, statSync} from 'fs';
-import {basename, join as pathJoin, sep as pathSeparator, posix} from 'path';
-import {DoneFuncWithErrOrRes, FastifyInstance, FastifySchema, HTTPMethods, RouteHandlerMethod} from 'fastify';
-import {IRequest} from '@/utils/def.request';
-import {IResponse} from '@/utils/def.response';
+import {basename, join as pathJoin, posix, sep as pathSeparator} from 'path';
+import {DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest, FastifySchema, HTTPMethods} from 'fastify';
 
 export interface IDynamicRoute
 {
     schema?: FastifySchema,
-    handler: RouteHandlerMethod,
-    onRequest?: (request: IRequest, response: IResponse, done: DoneFuncWithErrOrRes) => void,
+    handler: (request: FastifyRequest, response: FastifyReply, done?: DoneFuncWithErrOrRes) => void,
+    onRequest?: (request: FastifyRequest, response: FastifyReply, done: DoneFuncWithErrOrRes) => void,
 }
 
-interface IRouteHandler
+interface IRouteHandler extends IDynamicRoute
 {
-    handler: RouteHandlerMethod,
-    schema?: FastifySchema,
-    onRequest?: (request: IRequest, response: IResponse, done: DoneFuncWithErrOrRes) => void,
-    url: string
+    url: string;
 }
 
 interface IRoute

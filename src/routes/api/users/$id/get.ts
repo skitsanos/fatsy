@@ -1,9 +1,8 @@
-import {FastifyReply} from 'fastify';
-import {IRequest} from '@/utils/def.request';
+import {FastifyReply, FastifyRequest} from 'fastify';
 
 const get = {
 
-    handler: (_request: IRequest, response: FastifyReply) =>
+    handler: (_request: FastifyRequest, response: FastifyReply) =>
     {
         response.send({result: 'get user by id'});
     }

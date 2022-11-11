@@ -3,16 +3,28 @@
  * @version 1.0.20221110
  * @author skitsanos, https://github.com/skitsanos
  */
-import Fastify, {FastifyError, FastifyInstance, FastifyReply, HookHandlerDoneFunction} from 'fastify';
-import {join as pathJoin, isAbsolute} from 'path';
+import Fastify, {FastifyError, FastifyInstance, FastifyReply, FastifyRequest, HookHandlerDoneFunction} from 'fastify';
+import {isAbsolute, join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
-import fastifyJwt from '@fastify/jwt';
 import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
-import {IRequest} from '@/utils/def.request';
 import ApplicationConfiguration from '@skitsanos/app-config';
-import {IResponse} from '@/utils/def.response';
-//import pluginAuthenticate from '@/plugins/auth';
+import pluginAuthenticate from '@/plugins/auth';
+import {JWT} from '@fastify/jwt';
+
+declare module 'fastify'
+{
+    interface FastifyRequest
+    {
+        config: Record<string, any>;
+    }
+
+    interface FastifyReply
+    {
+        jwt: JWT;
+        config: Record<string, any>;
+    }
+}
 
 const appConfig = new ApplicationConfiguration();
 appConfig.load(pathJoin(__dirname, '..', 'config'));
@@ -26,24 +38,22 @@ const fastify: FastifyInstance = Fastify({
 //
 //https://github.com/fastify/fastify-jwt
 //
-fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
-//fastify.register(pluginAuthenticate, {secret: config.server.auth.secret || 'superSecret'});
+//fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
+fastify.register(pluginAuthenticate, {secret: config.server.auth.secret || 'superSecret'});
 
-fastify.decorateRequest('config', null);
+fastify.decorateRequest('config', config);
 fastify.decorateRequest('log', fastify.log);
 fastify.decorateReply('jwt', fastify?.jwt);
 
-fastify.addHook('preHandler', (req: IRequest, res: IResponse, done: HookHandlerDoneFunction) =>
+fastify.addHook('preHandler', (_req, res, done) =>
 {
-    req.config = config;
-    res['jwt'] = fastify.jwt;
-
+    res.jwt = fastify.jwt;
     done();
 });
 
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', (_req: IRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
+fastify.addHook('onRequest', (_req: FastifyRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
     res.header('server', config.app?.title);
     /*

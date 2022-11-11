@@ -1,6 +1,5 @@
-import {FastifyReply} from 'fastify';
+import {FastifyReply, FastifyRequest} from 'fastify';
 import {IDynamicRoute} from '@/utils/loader';
-import {IRequest} from '@/utils/def.request';
 
 const post: IDynamicRoute = {
     schema: {
@@ -13,7 +12,7 @@ const post: IDynamicRoute = {
         }
     },
 
-    handler: (request: IRequest, response: FastifyReply) =>
+    handler: (request: FastifyRequest, response: FastifyReply) =>
     {
         // More details on:
         //https://github.com/huangang/fastify-file-upload#readme
