@@ -1,16 +1,19 @@
 /**
  * Fatsy - Fastify Server Template done in TypeScript
- * @version 1.0.20221110
+ * @version 1.1.20230103
  * @author skitsanos, https://github.com/skitsanos
  */
-import Fastify, {FastifyError, FastifyInstance, FastifyReply, FastifyRequest, HookHandlerDoneFunction} from 'fastify';
+import Fastify, {FastifyReply, FastifyRequest, HookHandlerDoneFunction} from 'fastify';
 import {isAbsolute, join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
 import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
-import ApplicationConfiguration from '@skitsanos/app-config';
 import pluginAuthenticate from '@/plugins/auth';
 import {JWT} from '@fastify/jwt';
+import {ensureDirSync, readFileSync} from 'fs-extra';
+import staticFilesPlugin from '@fastify/static';
+import getLogsLocation from '@/utils/getLogsLocation';
+import Configuration from '@/app/Configuration';
 
 declare module 'fastify'
 {
@@ -26,20 +29,50 @@ declare module 'fastify'
     }
 }
 
-const appConfig = new ApplicationConfiguration();
-appConfig.load(pathJoin(__dirname, '..', 'config'));
+Configuration.getInstance().load(pathJoin(__dirname, '..', 'config'));
 
-const {config}: Record<string, any> = appConfig;
+const {config} = Configuration.getInstance();
 
-const fastify: FastifyInstance = Fastify({
-    logger: config.server.logger
+if (config['server'].logger)
+{
+    const pathToLogs = getLogsLocation();
+
+    if (pathToLogs)
+    {
+        ensureDirSync(pathToLogs);
+    }
+}
+
+const fastify = Fastify({
+    logger: {
+        ...config['server'].logger
+    },
+
+    ...config['server'].https && {
+        https: {
+            key: readFileSync(config['server'].https.key),
+            cert: readFileSync(config['server'].https.cert)
+        }
+    }
+});
+
+//
+// support for serving static files
+//
+const pathStaticFiles = pathJoin(__dirname, '../public/ui/');
+fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
+
+fastify.register(staticFilesPlugin, {
+    root: pathStaticFiles,
+    //prefix: '/',
+    wildcard: true
 });
 
 //
 //https://github.com/fastify/fastify-jwt
 //
 //fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
-fastify.register(pluginAuthenticate, {secret: config.server.auth.secret || 'superSecret'});
+fastify.register(pluginAuthenticate, {secret: config['server'].auth.secret || 'superSecret'});
 
 fastify.decorateRequest('config', config);
 fastify.decorateRequest('log', fastify.log);
@@ -55,7 +88,7 @@ fastify.register(fileUpload);
 
 fastify.addHook('onRequest', (_req: FastifyRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
 {
-    res.header('server', config.app?.title);
+    res.header('server', config['app']?.title);
     /*
 	 * Helps prevent browsers from trying to guess (“sniff”) the MIME type, which can have security implications.
 	 */
@@ -76,7 +109,7 @@ fastify.addHook('onRequest', (_req: FastifyRequest, res: FastifyReply, done: Hoo
     done();
 });
 
-fastify.setErrorHandler((error: FastifyError, _, response: FastifyReply) =>
+fastify.setErrorHandler((error, _, response) =>
 {
     const {message, statusCode = 400} = error;
 
@@ -99,15 +132,15 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
     //
     fastify.log.info('Checking for template engine');
 
-    if (config.templating)
+    if (config['templating'])
     {
-        fastify.log.info(`Found ${config.templating.engine} templating engine`);
+        fastify.log.info(`Found ${config['templating'].engine} templating engine`);
 
         try
         {
-            const engine = await import(config.templating.engine);
+            const engine = await import(config['templating'].engine);
 
-            const {root, layout, ext = 'html', options} = config.templating;
+            const {root, layout, ext = 'html', options} = config['templating'];
 
             const getRootPath = () =>
             {
@@ -121,7 +154,7 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
 
             fastify.register(fastifyView, {
                 engine: {
-                    [config.templating.engine]: engine
+                    [config['templating'].engine]: engine
                 },
                 viewExt: ext,
                 root: getRootPath(),
@@ -137,8 +170,8 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
     }
 
     fastify.listen({
-        port: config.server.port,
-        host: config.server.host
+        port: config['server'].port || '0.0.0.0',
+        host: config['server'].host || 3000
     }).then(() =>
     {
         fastify.log.info('Up and running');

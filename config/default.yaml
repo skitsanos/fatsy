@@ -7,9 +7,9 @@ server:
   logger:
     level: warn
   body_limit: 50mb
-  https:
-    key: "server.key"
-    cert: "server.pem"
+  #  https:
+  #    key: "server.key"
+  #    cert: "server.pem"
   auth:
     secret: SuperSecret
 
