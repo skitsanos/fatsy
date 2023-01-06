@@ -3,7 +3,7 @@
  * @version 1.1.20230103
  * @author skitsanos, https://github.com/skitsanos
  */
-import Fastify, {FastifyReply, FastifyRequest, HookHandlerDoneFunction} from 'fastify';
+import Fastify from 'fastify';
 import {isAbsolute, join as pathJoin} from 'path';
 import fileUpload from 'fastify-file-upload';
 import fastifyView from '@fastify/view';
@@ -86,7 +86,7 @@ fastify.addHook('preHandler', (_req, res, done) =>
 
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', (_req: FastifyRequest, res: FastifyReply, done: HookHandlerDoneFunction) =>
+fastify.addHook('onRequest', (_req, res, done) =>
 {
     res.header('server', config['app']?.title);
     /*
