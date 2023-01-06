@@ -102,7 +102,7 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
 const loader = async (path: string, fastify: any) =>
 {
     const posixPath = path.split(pathSeparator).join(posix.sep);
-    const routesRoot = resolve(posixPath.split('/').pop() || 'routes');
+    const routesRoot = resolve(posixPath);
 
     if (existsSync(routesRoot))
     {
