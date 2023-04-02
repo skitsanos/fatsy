@@ -2,24 +2,22 @@ import {existsSync, readdirSync, statSync} from 'fs';
 import {basename, dirname, join as pathJoin, posix, resolve, sep as pathSeparator} from 'path';
 import {DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest, FastifySchema, HTTPMethods} from 'fastify';
 import {readJsonSync} from 'fs-extra';
+import ApplicationConfiguration from '@skitsanos/app-config';
+import Configuration from '@/app/Configuration';
 
-export interface IDynamicRoute
+export interface FatsyRouteUtils
+{
+    log: FastifyInstance['log'];
+    config: ApplicationConfiguration;
+    jwt: FastifyInstance['jwt'];
+}
+
+export interface FatsyDynamicRoute
 {
     private?: boolean,
     schema?: FastifySchema,
-    handler: (request: FastifyRequest, response: FastifyReply, done?: DoneFuncWithErrOrRes) => void,
+    handler: (request: FastifyRequest, response: FastifyReply, utils: FatsyRouteUtils) => void,
     onRequest?: (request: FastifyRequest, response: FastifyReply, done: DoneFuncWithErrOrRes) => void,
-}
-
-interface IRouteHandler extends IDynamicRoute
-{
-    private: boolean;
-    url: string;
-}
-
-interface IRoute
-{
-    default: IRouteHandler;
 }
 
 const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
@@ -90,7 +88,11 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
 
                     fastify.route({
                         method: method.toUpperCase() as HTTPMethods,
-                        handler: routeModule.default.handler,
+                        handler: (request, response) => routeModule.default.handler(request, response, {
+                            log: fastify.log,
+                            jwt: fastify.jwt,
+                            config: Configuration.getInstance()
+                        }),
                         schema: requestSchema(),
                         ...routeModule.default.private ? {onRequest: jwtVerifyHandler} : {onRequest: routeModule.default.onRequest},
                         url: pathParsed

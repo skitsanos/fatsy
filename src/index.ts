@@ -9,26 +9,25 @@ import fileUpload from 'fastify-file-upload';
 import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
 import pluginAuthenticate from '@/plugins/auth';
-import {JWT} from '@fastify/jwt';
 import {ensureDirSync, readFileSync} from 'fs-extra';
 import staticFilesPlugin from '@fastify/static';
 import getLogsLocation from '@/utils/getLogsLocation';
 import Configuration from '@/app/Configuration';
 import {existsSync} from 'fs';
 
-declare module 'fastify'
-{
-    interface FastifyRequest
-    {
-        config: Record<string, any>;
-    }
-
-    interface FastifyReply
-    {
-        jwt: JWT;
-        config: Record<string, any>;
-    }
-}
+// declare module 'fastify'
+// {
+//     interface FastifyRequest
+//     {
+//         config: Record<string, any>;
+//     }
+//
+//     interface FastifyReply
+//     {
+//         jwt: JWT;
+//         config: Record<string, any>;
+//     }
+// }
 
 Configuration.getInstance().load(pathJoin(__dirname, '..', 'config'));
 
@@ -60,20 +59,24 @@ const fastify = Fastify({
 //
 // support for serving static files
 //
-const pathStaticFiles = pathJoin(__dirname, '../public/ui/');
-fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
-
-if (!existsSync(pathStaticFiles))
+if (config['server'].static)
 {
-    fastify.log.error(`Static resources folder ${pathStaticFiles} does not exist`);
-    process.exit(1);
-}
+    const pathStaticFiles = isAbsolute(config['server'].static) ? config['server'].static : pathJoin(__dirname, '..', config['server'].static);
+    fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
 
-fastify.register(staticFilesPlugin, {
-    root: pathStaticFiles,
-    //prefix: '/',
-    wildcard: true
-});
+    if (!existsSync(pathStaticFiles))
+    {
+        fastify.log.error(`Static resources folder ${pathStaticFiles} does not exist`);
+        process.exit(1);
+    }
+
+    fastify.register(staticFilesPlugin, {
+        root: pathStaticFiles,
+        //prefix: '/',
+        wildcard: true
+    });
+
+}
 
 //
 //https://github.com/fastify/fastify-jwt
@@ -81,19 +84,9 @@ fastify.register(staticFilesPlugin, {
 //fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
 fastify.register(pluginAuthenticate, {secret: config['server'].auth.secret || 'superSecret'});
 
-fastify.decorateRequest('config', config);
-fastify.decorateRequest('log', fastify.log);
-fastify.decorateReply('jwt', fastify?.jwt);
-
-fastify.addHook('preHandler', (_req, res, done) =>
-{
-    res.jwt = fastify.jwt;
-    done();
-});
-
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', (_req, res, done) =>
+fastify.addHook('onRequest', async (_req, res) =>
 {
     res.header('server', config['app']?.title);
     /*
@@ -112,8 +105,6 @@ fastify.addHook('onRequest', (_req, res, done) =>
      * if it’s not allowed
      */
     res.header('X-Frame-Options', 'DENY');
-
-    done();
 });
 
 fastify.setErrorHandler((error, _, response) =>
@@ -129,7 +120,7 @@ fastify.setErrorHandler((error, _, response) =>
         },
         ...process.env['NODE_ENV'] !== 'production' && {
             debug: {
-                statusCode
+                error
             }
         }
     });

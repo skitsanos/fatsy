@@ -1,7 +1,7 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
-import {IDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute} from '@/utils/loader';
 
-const get: IDynamicRoute = {
+const get: FatsyDynamicRoute = {
     onRequest: async (request: FastifyRequest, response: FastifyReply) =>
     {
         try
@@ -13,11 +13,11 @@ const get: IDynamicRoute = {
             response.send(err);
         }
     },
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+    handler: (request: FastifyRequest, response: FastifyReply, utils) =>
     {
         const {username} = request.user as Record<string, any>;
 
-        request.log.info(`User: ${username}`);
+        utils.log.info(`User: ${username}`);
 
         response.send({
             result: 'get users'
