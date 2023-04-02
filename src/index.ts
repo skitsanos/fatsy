@@ -14,6 +14,7 @@ import {ensureDirSync, readFileSync} from 'fs-extra';
 import staticFilesPlugin from '@fastify/static';
 import getLogsLocation from '@/utils/getLogsLocation';
 import Configuration from '@/app/Configuration';
+import {existsSync} from 'fs';
 
 declare module 'fastify'
 {
@@ -62,6 +63,12 @@ const fastify = Fastify({
 const pathStaticFiles = pathJoin(__dirname, '../public/ui/');
 fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
 
+if (!existsSync(pathStaticFiles))
+{
+    fastify.log.error(`Static resources folder ${pathStaticFiles} does not exist`);
+    process.exit(1);
+}
+
 fastify.register(staticFilesPlugin, {
     root: pathStaticFiles,
     //prefix: '/',
@@ -90,20 +97,20 @@ fastify.addHook('onRequest', (_req, res, done) =>
 {
     res.header('server', config['app']?.title);
     /*
-	 * Helps prevent browsers from trying to guess (“sniff”) the MIME type, which can have security implications.
-	 */
+     * Helps prevent browsers from trying to guess (“sniff”) the MIME type, which can have security implications.
+     */
     res.header('X-Content-Type-Options', 'nosniff');
     /*
-	 * The X-DNS-Prefetch-Control header tells browsers whether they should do DNS prefetching. Turning it on may
-	 * not work—not all browsers support it in all situations—but turning it off should disable it on all
+     * The X-DNS-Prefetch-Control header tells browsers whether they should do DNS prefetching. Turning it on may
+     * not work—not all browsers support it in all situations—but turning it off should disable it on all
      * supported browsers.
-	 */
+     */
     res.header('X-DNS-Prefetch-Control', 'off');
     /*
-	 * The X-Frame-Options header tells browsers to prevent your webpage from being put in an iframe. When
-	 * browsers load iframes, they’ll check the value of the X-Frame-Options header and abort loading
-	 * if it’s not allowed
-	 */
+     * The X-Frame-Options header tells browsers to prevent your webpage from being put in an iframe. When
+     * browsers load iframes, they’ll check the value of the X-Frame-Options header and abort loading
+     * if it’s not allowed
+     */
     res.header('X-Frame-Options', 'DENY');
 
     done();
@@ -111,7 +118,10 @@ fastify.addHook('onRequest', (_req, res, done) =>
 
 fastify.setErrorHandler((error, _, response) =>
 {
-    const {message, statusCode = 400} = error;
+    const {
+        message,
+        statusCode = 400
+    } = error;
 
     response.code(statusCode).send({
         error: {
@@ -140,7 +150,12 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
         {
             const engine = await import(config['templating'].engine);
 
-            const {root, layout, ext = 'html', options} = config['templating'];
+            const {
+                root,
+                layout,
+                ext = 'html',
+                options
+            } = config['templating'];
 
             const getRootPath = () =>
             {
