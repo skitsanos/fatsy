@@ -1,15 +1,20 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
+import {FatsyDynamicRoute} from '@/utils/loader';
 
-const get = {
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+const get: FatsyDynamicRoute = {
+    handler: (_request: FastifyRequest, response: FastifyReply, utils) =>
     {
-        const {config, log} = request;
+        const {
+            log,
+            config
+        } = utils;
+        const {config: appConfig} = config;
 
         log.info('Got hello handler');
 
         response.send({
             debug: process.env['NODE_ENV'] !== 'production',
-            config
+            appConfig
         });
     }
 };

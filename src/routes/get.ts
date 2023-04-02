@@ -1,9 +1,8 @@
-import {IDynamicRoute} from '@/utils/loader';
-import {IRequest} from '@/utils/def.request';
+import {FatsyDynamicRoute} from '@/utils/loader';
 import {FastifyReply} from 'fastify';
 
-const get: IDynamicRoute = {
-    handler: (_request: IRequest, response: FastifyReply) =>
+const get: FatsyDynamicRoute = {
+    handler: (_request, response: FastifyReply) =>
     {
         //response.send({debug: process.env['NODE_ENV'] !== 'production', config});
 

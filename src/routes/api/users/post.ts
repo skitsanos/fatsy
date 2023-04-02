@@ -1,6 +1,8 @@
-import {IDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute} from '@/utils/loader';
 
-const post: IDynamicRoute = {
+const post: FatsyDynamicRoute = {
+    private: true,
+
     schema: {
         body: {
             type: 'object',
@@ -13,7 +15,9 @@ const post: IDynamicRoute = {
     },
     handler: (request, response) =>
     {
-        const {username, password} = request.body;
+        const {
+            username
+        } = request.body as Record<string, string>;
 
         response.send({username});
     }

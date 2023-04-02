@@ -1,7 +1,7 @@
-import {IDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute} from '@/utils/loader';
 import {FastifyReply, FastifyRequest} from 'fastify';
 
-const post: IDynamicRoute = {
+const post: FatsyDynamicRoute = {
     schema: {
         body: {
             type: 'object',
@@ -13,11 +13,11 @@ const post: IDynamicRoute = {
         }
     },
 
-    handler: (request: FastifyRequest, response: FastifyReply) =>
+    handler: (request: FastifyRequest, response: FastifyReply, utils) =>
     {
-        const {username, password} = request.body as Record<string, string>;
+        const {username} = request.body as Record<string, string>;
 
-        const {jwt} = response;
+        const {jwt} = utils;
 
         response.send({
             result: {

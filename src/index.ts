@@ -9,25 +9,25 @@ import fileUpload from 'fastify-file-upload';
 import fastifyView from '@fastify/view';
 import loader from '@/utils/loader';
 import pluginAuthenticate from '@/plugins/auth';
-import {JWT} from '@fastify/jwt';
 import {ensureDirSync, readFileSync} from 'fs-extra';
 import staticFilesPlugin from '@fastify/static';
 import getLogsLocation from '@/utils/getLogsLocation';
 import Configuration from '@/app/Configuration';
+import {existsSync} from 'fs';
 
-declare module 'fastify'
-{
-    interface FastifyRequest
-    {
-        config: Record<string, any>;
-    }
-
-    interface FastifyReply
-    {
-        jwt: JWT;
-        config: Record<string, any>;
-    }
-}
+// declare module 'fastify'
+// {
+//     interface FastifyRequest
+//     {
+//         config: Record<string, any>;
+//     }
+//
+//     interface FastifyReply
+//     {
+//         jwt: JWT;
+//         config: Record<string, any>;
+//     }
+// }
 
 Configuration.getInstance().load(pathJoin(__dirname, '..', 'config'));
 
@@ -59,14 +59,24 @@ const fastify = Fastify({
 //
 // support for serving static files
 //
-const pathStaticFiles = pathJoin(__dirname, '../public/ui/');
-fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
+if (config['server'].static)
+{
+    const pathStaticFiles = isAbsolute(config['server'].static) ? config['server'].static : pathJoin(__dirname, '..', config['server'].static);
+    fastify.log.info(`Mounting static resources from ${pathStaticFiles}`);
 
-fastify.register(staticFilesPlugin, {
-    root: pathStaticFiles,
-    //prefix: '/',
-    wildcard: true
-});
+    if (!existsSync(pathStaticFiles))
+    {
+        fastify.log.error(`Static resources folder ${pathStaticFiles} does not exist`);
+        process.exit(1);
+    }
+
+    fastify.register(staticFilesPlugin, {
+        root: pathStaticFiles,
+        //prefix: '/',
+        wildcard: true
+    });
+
+}
 
 //
 //https://github.com/fastify/fastify-jwt
@@ -74,44 +84,35 @@ fastify.register(staticFilesPlugin, {
 //fastify.register(fastifyJwt, {secret: config.server.auth.secret || 'superSecret'});
 fastify.register(pluginAuthenticate, {secret: config['server'].auth.secret || 'superSecret'});
 
-fastify.decorateRequest('config', config);
-fastify.decorateRequest('log', fastify.log);
-fastify.decorateReply('jwt', fastify?.jwt);
-
-fastify.addHook('preHandler', (_req, res, done) =>
-{
-    res.jwt = fastify.jwt;
-    done();
-});
-
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', (_req, res, done) =>
+fastify.addHook('onRequest', async (_req, res) =>
 {
     res.header('server', config['app']?.title);
     /*
-	 * Helps prevent browsers from trying to guess (“sniff”) the MIME type, which can have security implications.
-	 */
+     * Helps prevent browsers from trying to guess (“sniff”) the MIME type, which can have security implications.
+     */
     res.header('X-Content-Type-Options', 'nosniff');
     /*
-	 * The X-DNS-Prefetch-Control header tells browsers whether they should do DNS prefetching. Turning it on may
-	 * not work—not all browsers support it in all situations—but turning it off should disable it on all
+     * The X-DNS-Prefetch-Control header tells browsers whether they should do DNS prefetching. Turning it on may
+     * not work—not all browsers support it in all situations—but turning it off should disable it on all
      * supported browsers.
-	 */
+     */
     res.header('X-DNS-Prefetch-Control', 'off');
     /*
-	 * The X-Frame-Options header tells browsers to prevent your webpage from being put in an iframe. When
-	 * browsers load iframes, they’ll check the value of the X-Frame-Options header and abort loading
-	 * if it’s not allowed
-	 */
+     * The X-Frame-Options header tells browsers to prevent your webpage from being put in an iframe. When
+     * browsers load iframes, they’ll check the value of the X-Frame-Options header and abort loading
+     * if it’s not allowed
+     */
     res.header('X-Frame-Options', 'DENY');
-
-    done();
 });
 
 fastify.setErrorHandler((error, _, response) =>
 {
-    const {message, statusCode = 400} = error;
+    const {
+        message,
+        statusCode = 400
+    } = error;
 
     response.code(statusCode).send({
         error: {
@@ -119,7 +120,7 @@ fastify.setErrorHandler((error, _, response) =>
         },
         ...process.env['NODE_ENV'] !== 'production' && {
             debug: {
-                statusCode
+                error
             }
         }
     });
@@ -140,7 +141,12 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
         {
             const engine = await import(config['templating'].engine);
 
-            const {root, layout, ext = 'html', options} = config['templating'];
+            const {
+                root,
+                layout,
+                ext = 'html',
+                options
+            } = config['templating'];
 
             const getRootPath = () =>
             {

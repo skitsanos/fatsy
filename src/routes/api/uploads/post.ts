@@ -1,7 +1,7 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
-import {IDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute} from '@/utils/loader';
 
-const post: IDynamicRoute = {
+const post: FatsyDynamicRoute = {
     schema: {
         body: {
             type: 'object',
