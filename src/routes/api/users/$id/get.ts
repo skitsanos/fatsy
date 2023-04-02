@@ -1,6 +1,8 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
+import {FatsyDynamicRoute} from '@/utils/loader';
 
-const get = {
+const get: FatsyDynamicRoute = {
+    private: true,
 
     handler: (_request: FastifyRequest, response: FastifyReply) =>
     {

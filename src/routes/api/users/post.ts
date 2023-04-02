@@ -1,6 +1,8 @@
 import {FatsyDynamicRoute} from '@/utils/loader';
 
 const post: FatsyDynamicRoute = {
+    private: true,
+
     schema: {
         body: {
             type: 'object',
