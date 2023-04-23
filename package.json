@@ -21,6 +21,8 @@
     "prod:start": "node src/index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.317.0",
+    "@aws-sdk/s3-request-presigner": "^3.317.0",
     "@fastify/autoload": "^5.4.1",
     "@fastify/cookie": "^8.3.0",
     "@fastify/jwt": "^6.3.2",

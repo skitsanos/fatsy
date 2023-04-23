@@ -20,3 +20,9 @@ templating:
     partials:
       index: "index.html"
       footer: "footer.html"
+
+s3:
+  endpoint: http://localhost:9000
+  credentials:
+    accessKeyId: minio
+    secretAccessKey: minio1234
