@@ -46,3 +46,6 @@ server:
 - [x] Runs in Docker
 - [x] Runs in Amazon ECS
 - [x] Runs in amazon ECS via HashiCorp waypoint
+
+### Useful links
+- [Connect Node.js to MinIO with TLS using AWS S3](https://northflank.com/guides/connect-nodejs-to-minio-with-tls-using-aws-s3)
