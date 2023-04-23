@@ -15,19 +15,9 @@ import getLogsLocation from '@/utils/getLogsLocation';
 import Configuration from '@/app/Configuration';
 import {existsSync} from 'fs';
 
-// declare module 'fastify'
-// {
-//     interface FastifyRequest
-//     {
-//         config: Record<string, any>;
-//     }
-//
-//     interface FastifyReply
-//     {
-//         jwt: JWT;
-//         config: Record<string, any>;
-//     }
-// }
+// support for websockets
+import websocketPlugin from '@/plugins/ws';
+import AppEvents, {ApplicationEvent, EventTypes} from '@/app/AppEvents';
 
 Configuration.getInstance().load(pathJoin(__dirname, '..', 'config'));
 
@@ -86,7 +76,9 @@ fastify.register(pluginAuthenticate, {secret: config['server'].auth.secret || 's
 
 fastify.register(fileUpload);
 
-fastify.addHook('onRequest', async (_req, res) =>
+fastify.register(websocketPlugin);
+
+fastify.addHook('onRequest', async (req, res) =>
 {
     res.header('server', config['app']?.title);
     /*
@@ -105,6 +97,11 @@ fastify.addHook('onRequest', async (_req, res) =>
      * if it’s not allowed
      */
     res.header('X-Frame-Options', 'DENY');
+
+    AppEvents.getInstance().emit(ApplicationEvent.LOG, {
+        type: EventTypes.DEBUG,
+        url: req.url
+    });
 });
 
 fastify.setErrorHandler((error, _, response) =>
