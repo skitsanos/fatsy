@@ -49,3 +49,4 @@ server:
 
 ### Useful links
 - [Connect Node.js to MinIO with TLS using AWS S3](https://northflank.com/guides/connect-nodejs-to-minio-with-tls-using-aws-s3)
+- [A full P2P protocol written entirely in JavaScript](https://js.ipfs.tech/)
