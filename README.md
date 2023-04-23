@@ -37,6 +37,8 @@ server:
 - [x] Application configuration with load order to the `config` npm package, so the first one loads is `default`, then `local`,
   then your `NODE_ENV` profile
 - [x] Templating engine - by default, there is [Handlebars](https://handlebarsjs.com/) bundled for you
+- [x] S3 storage support [Example](src/routes/api/uploads/s3)
+- [x] Websockets support
 
 ### Environments that were tested
 
