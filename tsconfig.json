@@ -27,7 +27,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noUncheckedIndexedAccess": true,
-        "noPropertyAccessFromIndexSignature": true,
+        "noPropertyAccessFromIndexSignature": false,
         "strictBindCallApply": true,
         "removeComments": true
     },
