@@ -27,7 +27,7 @@
     "@fastify/jwt": "^6.7.1",
     "@fastify/static": "^6.10.1",
     "@fastify/view": "^7.4.1",
-    "@fastify/websocket": "^7.2.0",
+    "@fastify/websocket": "^8.0.0",
     "@skitsanos/app-config": "skitsanos/app-config",
     "fastify": "^4.15.0",
     "fastify-file-upload": "^4.0.0",
