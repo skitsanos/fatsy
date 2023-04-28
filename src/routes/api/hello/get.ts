@@ -1,8 +1,8 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
-import {FatsyDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute, FatsyRouteUtils} from '@/utils/loader';
 
 const get: FatsyDynamicRoute = {
-    handler: (_request: FastifyRequest, response: FastifyReply, utils) =>
+    handler: (_request: FastifyRequest, response: FastifyReply, utils:FatsyRouteUtils) =>
     {
         const {
             log,
