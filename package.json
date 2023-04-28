@@ -5,7 +5,7 @@
     "name": "Skitsanos",
     "url": "https://github.com/skitsanos"
   },
-  "version": "1.2.20230103",
+  "version": "1.3.0",
   "license": "MIT",
   "scripts": {
     "start": "node -r @swc-node/register src/index.ts",
@@ -21,26 +21,26 @@
     "prod:start": "node src/index.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.317.0",
-    "@aws-sdk/s3-request-presigner": "^3.317.0",
+    "@aws-sdk/client-s3": "^3.321.1",
+    "@aws-sdk/s3-request-presigner": "^3.321.1",
     "@fastify/cookie": "^8.3.0",
     "@fastify/jwt": "^6.7.1",
     "@fastify/static": "^6.10.1",
     "@fastify/view": "^7.4.1",
     "@fastify/websocket": "^8.0.0",
     "@skitsanos/app-config": "skitsanos/app-config",
-    "fastify": "^4.15.0",
+    "fastify": "^4.17.0",
     "fastify-file-upload": "^4.0.0",
     "fs-extra": "^11.1.1",
     "handlebars": "^4.7.7",
     "node-forge": "^1.3.1",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
-    "@swc-node/register": "^1.6.4",
-    "@swc/core": "^1.3.53",
+    "@swc-node/register": "^1.6.5",
+    "@swc/core": "^1.3.55",
     "@types/fs-extra": "^11.0.1",
-    "@types/node": "^18.16.0",
+    "@types/node": "^18.16.2",
     "@types/node-forge": "^1.3.2",
     "cpy-cli": "^4.2.0",
     "esbuild": "^0.17.18",
