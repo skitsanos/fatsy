@@ -18,7 +18,8 @@
     "copy:package": "cpy package.json dist/",
     "build:sources": "esbuild `find src \\( -name '*.ts' \\)` --platform=node --format=cjs --tsconfig=tsconfig.json --outdir=dist/src",
     "build": "yarn run build:sources && yarn run copy:config && yarn run copy:templates && yarn run copy:tsconfig && yarn run copy:package",
-    "prod:start": "node src/index.js"
+    "prod:start": "node src/index.js",
+    "test": "hurl -k --variables-file ./tests/.vars tests/*.hurl"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.321.1",
