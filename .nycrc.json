@@ -1,0 +1,20 @@
+{
+  "require": "@swc-node/register",
+  "all": true,
+  "skip-full": true,
+  "extension": [
+    ".ts"
+  ],
+  "reporter": [
+    "text-summary",
+    "json-summary"
+  ],
+  "include": [
+    "**/src/**/*.ts"
+  ],
+  "exclude": [
+    "**/coverage/**",
+    "**/test/**",
+    "**/node_modules/**"
+  ]
+}

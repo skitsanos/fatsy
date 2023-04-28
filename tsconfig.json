@@ -1,42 +1,42 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "src/*"
-            ]
-        },
-        "declaration": true,
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "target": "esnext",
-        "module": "esnext",
-        "sourceMap": true,
-        "strict": true,
-        "types": [
-            "node"
-        ],
-        "typeRoots": [
-            "./src/@types"
-        ],
-        "experimentalDecorators": true,
-        "noImplicitAny": true,
-        "allowSyntheticDefaultImports": true,
-        "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noUncheckedIndexedAccess": true,
-        "noPropertyAccessFromIndexSignature": false,
-        "strictBindCallApply": true,
-        "removeComments": true
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
     },
-    "include": [
-        "src/*.ts",
-        "src/**/*.ts"
+    "declaration": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "esnext",
+    "module": "esnext",
+    "sourceMap": true,
+    "strict": true,
+    "types": [
+      "node"
     ],
-    "exclude": [
-        "dist",
-        "node_modules"
-    ]
+    "typeRoots": [
+      "./src/@types"
+    ],
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "strictBindCallApply": true,
+    "removeComments": true
+  },
+  "include": [
+    "src/*.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

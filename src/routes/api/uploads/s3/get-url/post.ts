@@ -1,5 +1,5 @@
 import {FastifyReply, FastifyRequest} from 'fastify';
-import {FatsyDynamicRoute} from '@/utils/loader';
+import {FatsyDynamicRoute, FatsyRouteUtils} from '@/utils/loader';
 import {PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 
@@ -14,7 +14,7 @@ const post: FatsyDynamicRoute = {
         }
     },
 
-    handler: async (request: FastifyRequest, response: FastifyReply, utils) =>
+    handler: async (request: FastifyRequest, response: FastifyReply, utils: FatsyRouteUtils) =>
     {
         const {config: configUtil} = utils;
         const {config} = configUtil;
@@ -22,22 +22,24 @@ const post: FatsyDynamicRoute = {
         if (!config?.s3)
         {
             response
-                .code(400)
-                .send({
-                    error: {
-                        message: 'S3 configuration is missing'
-                    }
-                });
+            .code(400)
+            .send({
+                error: {
+                    message: 'S3 configuration is missing'
+                }
+            });
             return;
         }
 
         const {
             credentials,
-            endpoint
+            endpoint,
+            region = 'us-east-1'
         } = config.s3;
 
         const client = new S3Client({
             endpoint,
+            region,
             forcePathStyle: true,
             credentials: {
                 // accessKeyId,
