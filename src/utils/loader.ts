@@ -4,6 +4,7 @@ import {DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest, Fas
 import {readJsonSync} from 'fs-extra';
 import ApplicationConfiguration from '@skitsanos/app-config';
 import Configuration from '@/app/Configuration';
+import fastifyWebSocket, {SocketStream} from '@fastify/websocket';
 
 export interface FatsyRouteUtils
 {
@@ -16,7 +17,9 @@ export interface FatsyDynamicRoute
 {
     private?: boolean,
     schema?: FastifySchema,
-    handler: (request: FastifyRequest, response: FastifyReply, utils: FatsyRouteUtils) => void,
+    handler:
+        ((request: FastifyRequest, response: FastifyReply, utils: FatsyRouteUtils) => void)
+        | ((connection: SocketStream, request: FastifyRequest, utils: FatsyRouteUtils) => void)
     onRequest?: (request: FastifyRequest, response: FastifyReply, done: DoneFuncWithErrOrRes) => void,
 }
 
@@ -39,12 +42,12 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
                 {
                     const posixPath = fullPath.split(pathSeparator).join(posix.sep);
                     const urlPath = posixPath.substring(posixPath.indexOf('routes') + 6)
-                                             .replace(`/${root}`, '')
-                                             .replace(/\/\w+\.(.+)$/gi, '');
+                    .replace(`/${root}`, '')
+                    .replace(/\/\w+\.(.+)$/gi, '');
 
                     const pathParsed = urlPath === ''
-                                       ? '/'
-                                       : urlPath.replace(/\$/gi, ':');
+                        ? '/'
+                        : urlPath.replace(/\$/gi, ':');
 
                     const method = basename(fullPath).replace(/\.[^/.]+$/, '');
 
@@ -86,6 +89,26 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
                         return undefined;
                     };
 
+                    //
+                    // Support for websocket routes
+                    //
+                    if (method.toLowerCase() === 'websockets' || method.toLowerCase() === 'ws')
+                    {
+                        fastify.register(async function (f)
+                        {
+                            f.get(pathParsed, {
+                                websocket: true,
+                                ...routeModule.default.private ? {onRequest: jwtVerifyHandler} : {onRequest: routeModule.default.onRequest},
+                            }, async (connection: SocketStream, request: FastifyRequest) =>
+                                routeModule.default.handler(connection, request, {
+                                    log: fastify.log,
+                                    jwt: fastify.jwt,
+                                    config: Configuration.getInstance()
+                                }));
+                        });
+                        return;
+                    }
+
                     fastify.route({
                         method: method.toUpperCase() as HTTPMethods,
                         handler: (request, response) => routeModule.default.handler(request, response, {
@@ -105,6 +128,8 @@ const parsePath = async (root: string, p: string, fastify: FastifyInstance) =>
 
 const loader = async (path: string, fastify: any) =>
 {
+    fastify.register(fastifyWebSocket);
+
     const posixPath = path.split(pathSeparator).join(posix.sep);
     const routesRoot = resolve(posixPath);
 

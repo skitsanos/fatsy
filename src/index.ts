@@ -1,6 +1,6 @@
 /**
  * Fatsy - Fastify Server Template done in TypeScript
- * @version 1.1.20230103
+ * @version 1.3.0
  * @author skitsanos, https://github.com/skitsanos
  */
 import Fastify from 'fastify';
@@ -15,8 +15,6 @@ import getLogsLocation from '@/utils/getLogsLocation';
 import Configuration from '@/app/Configuration';
 import {existsSync} from 'fs';
 
-// support for websockets
-import websocketPlugin from '@/plugins/ws';
 import AppEvents, {ApplicationEvent, EventTypes} from '@/app/AppEvents';
 
 Configuration.getInstance().load(pathJoin(__dirname, '..', 'config'));
@@ -75,8 +73,6 @@ if (config['server'].static)
 fastify.register(pluginAuthenticate, {secret: config['server'].auth.secret || 'superSecret'});
 
 fastify.register(fileUpload);
-
-fastify.register(websocketPlugin);
 
 fastify.addHook('onRequest', async (req, res) =>
 {
@@ -186,4 +182,3 @@ loader(pathJoin(__dirname, 'routes'), fastify).then(async () =>
         }
     });
 });
-
