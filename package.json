@@ -19,7 +19,8 @@
     "build:sources": "esbuild `find src \\( -name '*.ts' \\)` --platform=node --format=cjs --tsconfig=tsconfig.json --outdir=dist/src",
     "build": "yarn run build:sources && yarn run copy:config && yarn run copy:templates && yarn run copy:tsconfig && yarn run copy:package",
     "prod:start": "node src/index.js",
-    "test": "hurl -k --variables-file ./tests/.vars tests/*.hurl"
+    "test": "hurl -k --variables-file ./tests/.vars tests/*.hurl",
+    "test:coverage": "nyc npm test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.321.1",
@@ -46,6 +47,23 @@
     "cpy-cli": "^4.2.0",
     "esbuild": "^0.17.18",
     "esbuild-register": "^3.4.2",
+    "nyc": "^15.1.0",
     "typescript": "^5.0.4"
+  },
+  "nyc": {
+    "all": true,
+    "extension": [
+      ".ts"
+    ],
+    "reporter": [
+      "text"
+    ],
+    "exclude": [
+      "**/test/**",
+      "**/node_modules/**"
+    ],
+    "require": [
+      "@swc-node/register"
+    ]
   }
 }
