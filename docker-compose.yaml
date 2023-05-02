@@ -2,10 +2,8 @@ version: "3.9"
 
 services:
   minio:
-    depends_on:
-      - kes
     image: minio/minio:latest
-    container_name: minio-and-kes
+    container_name: minio-for-fatsy
     ports:
       - "9000:9000"
       - "9090:9090"
