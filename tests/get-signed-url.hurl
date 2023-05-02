@@ -4,3 +4,10 @@ POST {{URL}}/api/uploads/s3/get-url
 }
 
 HTTP *
+
+[Asserts]
+status == 200
+jsonpath "$.result" != null
+
+[Captures]
+SIGNED_URL: jsonpath "$.result"
