@@ -23,7 +23,7 @@ jobs:
            -H "Accept: application/vnd.github+json" \
            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
            -H "X-GitHub-Api-Version: 2022-11-28" \
-           https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }} \
+           --location "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
            -d '{"state":"pending","description":"The PR message check is pending","context":"ci-pr-check"}'
 
       - name: Check PR title check
@@ -41,7 +41,7 @@ jobs:
                -H "Accept: application/vnd.github+json" \
                -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
                -H "X-GitHub-Api-Version: 2022-11-28" \
-               https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }} \
+               --location "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
                -d '{"state":"failure","description":"The PR title check is failed!","context":"ci-pr-check"}'
 
             exit 1
@@ -70,5 +70,5 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }} \
+          --location "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
           -d '{"state":"success","description":"The PR message check is done","context":"ci-pr-check"}'
