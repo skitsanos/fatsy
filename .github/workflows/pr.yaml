@@ -30,8 +30,10 @@ jobs:
         run: |
           echo "PR SHA: $GITHUB_SHA"
           echo "Title: ${{github.event.pull_request.title}}"
+          
+          REGEX="^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\([[:alnum:]._-]+\))?(!)?: ([[:alnum:]])+([[:space:][:print:]]*)"
 
-          if ! [[ "${{github.event.pull_request.title}}" =~ ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?:\s.+ ]]; then
+          if ! [[ "${{github.event.pull_request.title}}" =~ $REGEX ]]; then
             echo "::error::The PR title does not follow the conventional commit format."
 
             curl -L \
