@@ -12,36 +12,19 @@ jobs:
   check-pr:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: set status to pending
+      - name: Install jq
         run: |
-          curl -L \
-           -X POST \
-           -H "Accept: application/vnd.github+json" \
-           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
-           -H "X-GitHub-Api-Version: 2022-11-28" \
-           https://api.github.com/repos/${{env.GITHUB_REPOSITORY}}/statuses/${{ github.event.pull_request.head.sha }} \
-           -d '{"state":"pending","description":"The PR message check is failed!","context":"ci"}'
+          sudo apt install jq
 
-      - name: Check PR commit message
+      - name: Check PR title check
         run: |
-          commit_message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
+          echo "PR SHA: $GITHUB_SHA"
+          echo "Title: ${{github.event.pull_request.title}}"
           
-          echo "Commit Message: $commit_message"
+          REGEX="^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\([[:alnum:]._-]+\))?(!)?: ([[:alnum:]])+([[:space:][:print:]]*)"
           
-          if ! [[ $commit_message =~ ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?:\s.+ ]]; then
-            echo "::error::The commit message does not follow the conventional commit format."
-          
-            curl -L \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{env.GITHUB_REPOSITORY}}/statuses/${{ github.event.pull_request.head.sha }} \
-            -d '{"state":"failure","description":"The PR message check is failed!","context":"ci"}'
-          
+          if ! [[ "${{github.event.pull_request.title}}" =~ $REGEX ]]; then
+            echo "::error::The PR title does not follow the conventional commit format."
             exit 1
           fi
 
@@ -49,6 +32,7 @@ jobs:
         run: |
           if [[ ${{ github.ref }} != 'refs/heads/develop' ]]; then
             echo "::error::Only 'develop' branch can be merged into 'main'."
+          
             exit 1
           fi
 
@@ -56,26 +40,6 @@ jobs:
         run: |
           if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
             echo "::error::Only branches other than 'main' can be merged into 'develop'."
+          
             exit 1
           fi
-
-      - name: Update PR status check
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const context = github.context;
-            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-            
-            await octokit.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'PR-Check',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion: 'success',
-              output: {
-                title: 'PR Commit Message Check',
-                summary: 'The commit message follows the conventional commit format.',
-              },
-            });
