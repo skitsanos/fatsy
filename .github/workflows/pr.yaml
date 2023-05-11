@@ -29,7 +29,7 @@ jobs:
       - name: Check PR commit message
         run: |
           echo "PR SHA: $GITHUB_SHA"
-          $commit_message=$(curl -L \
+          commit_message=$(curl -L \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           --location "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/${{ github.event.pull_request.head.sha }}" | jq -r '.commit.message')
