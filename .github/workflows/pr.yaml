@@ -37,3 +37,24 @@ jobs:
             echo "::error::Only branches other than 'main' can be merged into 'develop'."
             exit 1
           fi
+
+      - name: Update PR status check
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const context = github.context;
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            
+            await octokit.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Conventional Commits',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'PR Commit Message Check',
+                summary: 'The commit message follows the conventional commit format.',
+              },
+            });
