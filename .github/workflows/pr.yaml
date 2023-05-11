@@ -49,7 +49,7 @@ jobs:
             await octokit.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              name: 'Conventional Commits',
+              name: 'PR-Check',
               head_sha: context.sha,
               status: 'completed',
               conclusion: 'success',
