@@ -28,7 +28,9 @@ jobs:
       - name: Check PR commit message
         run: |
           commit_message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
+          
           echo "Commit Message: $commit_message"
+          
           if ! [[ $commit_message =~ ^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\(.+\))?:\s.+ ]]; then
             echo "::error::The commit message does not follow the conventional commit format."
           
