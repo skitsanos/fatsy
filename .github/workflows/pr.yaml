@@ -58,7 +58,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
             -H "X-GitHub-Api-Version: 2022-11-28" \
             --location "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
-            -d '{"state":"success","description":"The PR message check failed. Only 'develop' branch can be merged into 'main'.","context":"ci-pr-check"}'
+            -d '{"state":"failed","description":"The PR message check failed. Only 'develop' branch can be merged into 'main'.","context":"ci-pr-check"}'
           
             exit 1
           fi
@@ -74,13 +74,12 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
             -H "X-GitHub-Api-Version: 2022-11-28" \
             --location "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/${{ github.event.pull_request.head.sha }}" \
-            -d '{"state":"success","description":"The PR message check failed. Only branches other than 'main' can be merged into 'develop'","context":"ci-pr-check"}'
+            -d '{"state":"failed","description":"The PR message check failed. Only branches other than 'main' can be merged into 'develop'","context":"ci-pr-check"}'
           
             exit 1
           fi
 
       - name: set status to done
-        if: always()
         run: |
           curl -L \
           -X POST \
