@@ -63,6 +63,7 @@ jobs:
       - name: Report status
         if: always()
         run: |
+          echo "SHA: ${{ github.event.pull_request.head.sha }}"
           curl -L \
           -X POST \
           -H "Accept: application/vnd.github+json" \
