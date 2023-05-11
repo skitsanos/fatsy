@@ -25,11 +25,6 @@ jobs:
             echo "::error::The commit message does not follow the conventional commit format."
             exit 1
           fi
-      #          regex="^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+"
-#          if [[ ! $commit_message =~ $regex ]]; then
-#            echo "::error::The commit message does not follow the conventional commit format."
-#            exit 1
-#          fi
 
       - name: Check branch for merging to 'main'
         run: |
