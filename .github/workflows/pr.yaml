@@ -29,6 +29,8 @@ jobs:
       - name: Check PR commit message
         run: |
           echo "PR SHA: $GITHUB_SHA"
+          echo "Title: ${{github.event.pull_request.title}}"
+          
           commit_message=$(curl -L \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
