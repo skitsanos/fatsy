@@ -63,6 +63,7 @@ jobs:
       - name: Report status
         if: always()
         run: |
+          echo "Repo: $GITHUB_REPOSITORY"
           echo "SHA: ${{ github.event.pull_request.head.sha }}"
           curl -L \
           -X POST \
