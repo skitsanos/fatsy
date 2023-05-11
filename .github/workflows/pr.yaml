@@ -1,0 +1,37 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR commit message
+        run: |
+          commit_message=$(git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }})
+          echo "Commit Message: $commit_message"
+          regex="^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+"
+          if [[ ! $commit_message =~ $regex ]]; then
+            echo "::error::The commit message does not follow the conventional commit format."
+            exit 1
+          fi
+
+      - name: Check branch for merging to 'main'
+        run: |
+          if [[ ${{ github.ref }} != 'refs/heads/develop' ]]; then
+            echo "::error::Only 'develop' branch can be merged into 'main'."
+            exit 1
+          fi
+
+      - name: Check branch for merging to 'develop'
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
+            echo "::error::Only branches other than 'main' can be merged into 'develop'."
+            exit 1
+          fi
