@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.325.0",
     "@aws-sdk/s3-request-presigner": "^3.325.0",
-    "@fastify/cookie": "^8.3.0",
+    "@fastify/cookie": "^9.0.1",
     "@fastify/jwt": "^7.0.0",
     "@fastify/static": "^6.10.1",
     "@fastify/view": "^8.0.0",
