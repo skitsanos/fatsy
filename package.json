@@ -27,7 +27,7 @@
     "@aws-sdk/s3-request-presigner": "^3.325.0",
     "@fastify/cookie": "^9.0.4",
     "@fastify/jwt": "^8.0.0",
-    "@fastify/static": "^6.10.1",
+    "@fastify/static": "^7.0.0",
     "@fastify/view": "^8.0.0",
     "@fastify/websocket": "^8.0.0",
     "@skitsanos/app-config": "skitsanos/app-config",
