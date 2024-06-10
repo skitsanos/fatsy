@@ -48,7 +48,7 @@
     "cpy-cli": "^5.0.0",
     "esbuild": "^0.20.0",
     "esbuild-register": "^3.4.2",
-    "nyc": "^15.1.0",
+    "nyc": "^17.0.0",
     "typescript": "^5.0.4"
   }
 }
