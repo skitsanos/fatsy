@@ -31,7 +31,7 @@
     "@fastify/view": "^9.0.0",
     "@fastify/websocket": "^10.0.0",
     "@skitsanos/app-config": "skitsanos/app-config",
-    "fastify": "^4.17.0",
+    "fastify": "^5.0.0",
     "fastify-file-upload": "^4.0.0",
     "fs-extra": "^11.1.1",
     "handlebars": "^4.7.7",
